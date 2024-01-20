@@ -59,6 +59,7 @@ def upload_file(upload_url, files):
     Returns
         str: The URL to obtain the analysis.
     """
+    
     headers = {
         "accept": "application/json",
         "x-apikey": VIRUS_TOTAL_API_KEY,
@@ -70,23 +71,24 @@ def upload_file(upload_url, files):
     return analysis_url
 
 def get_analysis(analysis_url):
-        """
-        Returns the analysis.
+    """
+    Returns the analysis.
 
-        Args:
-            analysis_url (str): The URL to obtain the analysis.
+    Args:
+        analysis_url (str): The URL to obtain the analysis.
 
-        Returns:
-            dict: The analysis as a Python dictionary.
-        """
-        headers = {
-            "accept": "application/json",
-            "x-apikey": VIRUS_TOTAL_API_KEY,
-        }
+    Returns:
+        dict: The analysis as a Python dictionary.
+    """
 
-        response = requests.get(analysis_url, headers=headers)
-        analysis = json.loads(response.text)
+    headers = {
+        "accept": "application/json",
+        "x-apikey": VIRUS_TOTAL_API_KEY,
+    }
 
-        return analysis
+    response = requests.get(analysis_url, headers=headers)
+    analysis = json.loads(response.text)
+
+    return analysis
 
 bot.infinity_polling()
