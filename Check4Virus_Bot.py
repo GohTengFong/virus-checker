@@ -2,6 +2,7 @@ import telebot
 from dotenv import load_dotenv
 import os
 import requests
+from langchain_community.llms import HuggingFaceHub
 
 load_dotenv()
 
@@ -13,6 +14,12 @@ bot = telebot.TeleBot(BOT_TOKEN)
 @bot.message_handler(commands=['start','help'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Welcome! Upload a file and I will check it for malware!")
+
+'''
+@bot.message_handler(func=lambda msg: True)
+def on_message(message):
+    bot.send_message(message.chat.id, "Welcome! Upload a file and I will check it for malware!")
+'''
 
 @bot.message_handler(content_types=['document'])
 def handle_pdf(message):
@@ -31,11 +38,6 @@ def handle_pdf(message):
         response = check_file(file)
 
     bot.send_message(message.chat.id, response)        
-
-@bot.message_handler(func=lambda msg: True)
-def on_message(message):
-    reply = "hello!"
-    bot.reply_to(message, reply)
     
 def check_file(file):
     headers = {
@@ -49,4 +51,24 @@ def check_file(file):
     
     return response
 
+class LLM:
+  def __init__(self):
+    model_string = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+    self.chat = []
+    self.llm = HuggingFaceHub(repo_id=model_string, model_kwargs={"temperature": 0.5, "max_length":64,"max_new_tokens":512})
+
+  def get_reply(self, instruction):
+    reply = self.llm.invoke(instruction)
+    return reply
+
+llm = LLM()
+
+'''
+@bot.message_handler(func=lambda msg: True)
+def on_message(message):
+    print(f"Message received! {message}")
+    reply = llm.get_reply(message.text)
+    bot.reply_to(message, reply)
+'''
+    
 bot.infinity_polling()
