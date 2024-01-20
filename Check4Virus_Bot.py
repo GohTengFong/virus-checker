@@ -1,6 +1,7 @@
 import telebot
 from dotenv import load_dotenv
 import os
+import json
 import requests
 
 load_dotenv()
@@ -8,7 +9,7 @@ load_dotenv()
 def init_bot():
     BOT_TOKEN = os.getenv("BOT_TOKEN")
     VIRUS_TOTAL_API_KEY = os.getenv("VIRUS_TOTAL_API_KEY")
-    VIRUS_TOTAL_URL = os.getenv("VIRUS_TOTAL_URL")
+    VIRUS_TOTAL_UPLOAD_URL = os.getenv("VIRUS_TOTAL_UPLOAD_URL")
     bot = telebot.TeleBot(BOT_TOKEN)
 
     @bot.message_handler(commands=['start'])
@@ -18,33 +19,78 @@ def init_bot():
     @bot.message_handler(content_types=['document'])
     def handle_pdf(message):
         file_info = bot.get_file(message.document.file_id)
-        file_path = file_info.file_path
-        file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
+        downloaded_file = bot.download_file(file_info.file_path)
+
+        with open("received_documents.pdf", "wb") as file:
+            file.write(downloaded_file)
 
         bot.reply_to(message, "I have received your file! Please wait while I perform my checks!")
-        
-        with open("temp.pdf", "wb") as file:
-            file.write(requests.get(file_url).content)
 
-        response = None
+        files = {"file": ("received_documents.pdf", open("received_documents.pdf", "rb"), "application/pdf")}
+        analysis_url = upload_file(get_upload_url(), files)
 
-        with open("temp.pdf", "rb") as file:
-            response = check_file(file)
+        analysis = get_analysis(analysis_url)
+    
 
-        bot.send_message(message.chat.id, response)        
+    def get_upload_url():
+        """
+        Returns the URL to upload the file to.
 
-    def check_file(file):
+        Returns:
+            str: The URL to upload the file to.
+        """
+
         headers = {
             "accept": "application/json",
-            "content-type": "multipart/form-data",
-            "file": file,
             "x-apikey": VIRUS_TOTAL_API_KEY,
         }
 
-        response = requests.get(VIRUS_TOTAL_URL, headers=headers)
+        response = requests.get(VIRUS_TOTAL_UPLOAD_URL, headers=headers)
+        upload_url = json.loads(response.text)["data"]
         
-        return response
-                                     
+        return upload_url
+    
+    def upload_file(upload_url, files):
+        """
+        Uploads the file to VirusTotal.
+
+        Args:
+            upload_url (str): The URL to upload the file to.
+            files (file): The file to upload.
+
+        Returns
+            str: The URL to obtain the analysis.
+        """
+        headers = {
+            "accept": "application/json",
+            "x-apikey": VIRUS_TOTAL_API_KEY,
+        }
+
+        response = requests.post(upload_url, files=files, headers=headers)
+        analysis_url = json.loads(response.text)["data"]["links"]["self"]
+        
+        return analysis_url
+
+    def get_analysis(analysis_url):
+        """
+        Returns the analysis.
+
+        Args:
+            analysis_url (str): The URL to obtain the analysis.
+
+        Returns:
+            dict: The analysis as a Python dictionary.
+        """
+        headers = {
+            "accept": "application/json",
+            "x-apikey": VIRUS_TOTAL_API_KEY,
+        }
+
+        response = requests.get(analysis_url, headers=headers)
+        analysis = json.loads(response.text)
+
+        return analysis
+
     return bot
 
 bot = init_bot()
