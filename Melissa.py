@@ -11,7 +11,7 @@ from db.get_user import get_user_from_database
 from parse import parse_chat
 from api import get_response, create_prompt
 
-load_dotenv()
+load_dotenv(override=True)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
