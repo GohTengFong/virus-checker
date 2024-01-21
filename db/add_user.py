@@ -17,8 +17,7 @@ def create_user_to_database(
     session = Session()
 
     # check if userid alr in database
-    criteria = {"userId": "1"}
-    existing_row = session.query(Models).filter_by(**criteria).first()
+    existing_row = session.query(Models).filter(Models.userId == str(userId)).first()
     if existing_row:
         session.delete(existing_row)
         session.commit()
