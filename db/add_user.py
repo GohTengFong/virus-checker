@@ -6,7 +6,7 @@ def create_user_to_database(
         userId, 
         state,
 ):
-    db_url = "postgresql://victorlai:@localhost:5432/melissa"
+    db_url = "postgres://bigcoders:ykKJdKYlEMFyvvyYQ4MMwV6ebd39IGbU@dpg-cmm79h0cmk4c73e0enug-a.singapore-postgres.render.com/makeyourmatedb"
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     session = Session()
