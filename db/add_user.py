@@ -17,11 +17,11 @@ def create_user_to_database(
     session = Session()
 
     # check if userid alr in database
-    # criteria = {"userId": "1"}
-    # existing_row = session.query(Models).filter_by(**criteria).first()
-    # if existing_row:
-    #     print("Exists in DB")
-    #     return
+    criteria = {"userId": "1"}
+    existing_row = session.query(Models).filter_by(**criteria).first()
+    if existing_row:
+        session.delete(existing_row)
+        session.commit()
 
     new_user = Models(
         userId=userId, 
