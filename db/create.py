@@ -3,10 +3,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 from sqlalchemy.types import Boolean
+from dotenv import load_dotenv
+import os
 
-db_url = "postgres://bigcoders:ykKJdKYlEMFyvvyYQ4MMwV6ebd39IGbU@dpg-cmm79h0cmk4c73e0enug-a.singapore-postgres.render.com/makeyourmatedb"
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
 
-engine = create_engine(db_url)
+engine = create_engine(DB_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 

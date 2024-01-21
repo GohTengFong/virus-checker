@@ -2,9 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.create import Models
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
 
 def get_user_from_database(userId):
-    db_url = "postgres://bigcoders:ykKJdKYlEMFyvvyYQ4MMwV6ebd39IGbU@dpg-cmm79h0cmk4c73e0enug-a.singapore-postgres.render.com/makeyourmatedb"
+    db_url = DB_URL
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     session = Session()

@@ -3,6 +3,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from db.create import Models
 from typing import Optional
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
 
 def update_user_stats(
         userId, 
@@ -12,7 +17,7 @@ def update_user_stats(
         race=None,
         current_state=None
 ):
-    db_url = "postgres://bigcoders:ykKJdKYlEMFyvvyYQ4MMwV6ebd39IGbU@dpg-cmm79h0cmk4c73e0enug-a.singapore-postgres.render.com/makeyourmatedb"
+    db_url = DB_URL
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -46,7 +51,7 @@ def update_user_chat_info(
         # summary, 
         # message_history
         ):
-    db_url = "postgresql://victorlai:@localhost:5432/melissa"
+    db_url = DB_URL
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -73,7 +78,7 @@ def update_user_chat_info(
         session.close()
 
 def update_user_summary_message_history(userId, summary: Optional[any] = None, message_history: Optional[any] = None):
-    db_url = "postgresql://victorlai:@localhost:5432/melissa"
+    db_url = DB_URL
     engine = create_engine(db_url)
     Session = sessionmaker(bind=engine)
     session = Session()
