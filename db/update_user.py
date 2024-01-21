@@ -26,10 +26,10 @@ def update_user_stats(
         user = session.query(Models).filter_by(userId=str(userId)).first()
 
         if user:
-            user.personalityName = personalityName
-            user.age = age
-            user.gender = gender
-            user.race = race
+            user.personalityName = personalityName if personalityName is not None else user.personalityName
+            user.age = age if age is not None else user.age
+            user.gender = gender if gender is not None else user.gender
+            user.race = race if race is not None else user.race
             user.currentState = current_state if current_state is not None else user.currentState
             session.commit()
             print(f"Uploaded chat info for user {user.userId}")
