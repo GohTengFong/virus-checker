@@ -1,5 +1,5 @@
 # melissa
-find @mylissa_bot on telegram
+find [@mylissa_bot](https://t.me/mylissa_bot) on telegram
 
 ![example](https://i.imgur.com/AbarQ0S.png)
 
